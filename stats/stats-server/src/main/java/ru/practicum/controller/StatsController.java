@@ -8,6 +8,7 @@ import ru.practicum.EndpointHit;
 import ru.practicum.ViewStats;
 import ru.practicum.server.StatsServer;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,8 +28,8 @@ public class StatsController {
     }
 
     @GetMapping("/stats")
-    public List<ViewStats> searchStats(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
-                                       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+    public List<ViewStats> searchStats(@Valid @RequestParam("start") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
+                                       @Valid @RequestParam("end") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
                                        @RequestParam(required = false) List<String> uris, @RequestParam(required = false) boolean unique) {
         return statsServer.searchStats(start, end, uris, unique);
     }
