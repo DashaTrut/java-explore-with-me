@@ -202,7 +202,7 @@ public class EventService {
                 .collect(toList());
     }
 
-    public EventFullDto privateGetEventId(Integer userId, Integer eventId) {
+    public EventFullDto privateGetEventId(int userId, int eventId) {
         getUser(userId);
         Event event = getEvent(eventId);
         if (event.getInitiator().getId() != userId) {
@@ -219,7 +219,7 @@ public class EventService {
     }
 
     @Transactional
-    public EventFullDto privateUpdateEventByInitiator(Integer userId, Integer eventId, UpdateEventUserRequest updateEventUser) {
+    public EventFullDto privateUpdateEventByInitiator(int userId, int eventId, UpdateEventUserRequest updateEventUser) {
         getUser(userId);
         Event event = getEvent(eventId);
         if (event.getState().equals(State.PUBLISHED)) {

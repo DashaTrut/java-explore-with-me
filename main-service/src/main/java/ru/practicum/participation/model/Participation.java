@@ -20,7 +20,7 @@ import java.util.Objects;
 public class Participation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
     @CreationTimestamp
     private LocalDateTime created;
     @ManyToOne

@@ -32,7 +32,7 @@ public class ParticipationService {
     private final UserRepositoryJpa userRepositoryJpa;
 
     @Transactional
-    public ParticipationRequestDto participationCreate(Integer userId, Integer eventId) {
+    public ParticipationRequestDto participationCreate(int userId, int eventId) {
         Participation participation = participationRepositoryJpa.findByRequesterIdAndEventId(userId, eventId);
         if (participation != null) {
             throw new ValidationException("У вас уже есть регистрация на это мероприятие");
@@ -67,7 +67,7 @@ public class ParticipationService {
     }
 
     @Transactional
-    public ParticipationRequestDto cancelParticipation(Integer userId, Integer requestId) {
+    public ParticipationRequestDto cancelParticipation(int userId, int requestId) {
         Participation participation = participationGet(requestId);
         if (participation.getRequester().getId() != userId) {
             throw new EntityNotFoundException("Вы не можете изменить чужую заявку");
