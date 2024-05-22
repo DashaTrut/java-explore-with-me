@@ -3,6 +3,7 @@ package ru.practicum.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.EndpointHit;
 import ru.practicum.ViewStats;
@@ -23,6 +24,7 @@ public class StatsController {
     private final StatsServer statsServer;
 
     @PostMapping("/hit")
+    @ResponseStatus(HttpStatus.CREATED)
     public void addStats(@RequestBody EndpointHit endpointHit) {
         statsServer.addStats(endpointHit);
     }

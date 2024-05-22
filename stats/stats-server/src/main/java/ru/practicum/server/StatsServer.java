@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHit;
 import ru.practicum.ViewStats;
+import ru.practicum.errors.exception.BadException;
 import ru.practicum.mapper.StatsMapper;
 import ru.practicum.model.UnitStats;
 import ru.practicum.repository.StatsRepository;
@@ -25,6 +26,9 @@ public class StatsServer {
 
 
     public List<ViewStats> searchStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+        if (start != null && end != null && start.isAfter(end)) {
+            throw new BadException("Конец диапазона раньше начала диапазона");
+        }
         if (uris == null) {
             if (unique == null || unique == false) {
                 return statsRepository.findAllStatsIp(start, end);
