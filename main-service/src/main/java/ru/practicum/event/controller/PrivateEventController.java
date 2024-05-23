@@ -33,7 +33,6 @@ public class PrivateEventController {
     private final ParticipationService participationService;
     private final CommentService commentService;
 
-
     @PatchMapping("/{eventId}")
     public EventFullDto updateEventByInitiator(@PathVariable @Positive Integer userId,
                                                @PathVariable @Positive Integer eventId,
