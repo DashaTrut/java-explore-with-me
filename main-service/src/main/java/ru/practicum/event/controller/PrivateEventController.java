@@ -34,29 +34,6 @@ public class PrivateEventController {
     private final CommentService commentService;
 
 
-    @PostMapping("/{eventId}/comments")
-    @ResponseStatus(HttpStatus.CREATED)
-    public CommentDto addComment(@PathVariable Integer userId,
-                                 @PathVariable Integer eventId,
-                                 @RequestBody @Valid NewCommentDto text) {
-        return commentService.createComment(userId, eventId, text);
-
-    }
-
-    @PatchMapping("/comments/{commentId}")
-    public CommentDto updateComment(@PathVariable Integer userId,
-                                    @PathVariable Integer commentId,
-                                    @RequestBody @Valid NewCommentDto text) {
-        return commentService.updateComment(userId, commentId, text);
-    }
-
-    @DeleteMapping("/comments/{commentId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteComment(@PathVariable Integer userId,
-                              @PathVariable Integer commentId) {
-        commentService.deleteComment(userId, commentId);
-    }
-
     @PatchMapping("/{eventId}")
     public EventFullDto updateEventByInitiator(@PathVariable @Positive Integer userId,
                                                @PathVariable @Positive Integer eventId,
@@ -97,6 +74,29 @@ public class PrivateEventController {
                                                               @RequestBody @Valid
                                                               EventRequestStatusUpdateRequest updateRequest) {
         return participationService.privateUpdateRequestStatus(userId, eventId, updateRequest);
+    }
+
+    @PostMapping("/{eventId}/comments")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto addComment(@PathVariable Integer userId,
+                                 @PathVariable Integer eventId,
+                                 @RequestBody @Valid NewCommentDto text) {
+        return commentService.createComment(userId, eventId, text);
+
+    }
+
+    @PatchMapping("/comments/{commentId}")
+    public CommentDto updateComment(@PathVariable Integer userId,
+                                    @PathVariable Integer commentId,
+                                    @RequestBody @Valid NewCommentDto text) {
+        return commentService.updateComment(userId, commentId, text);
+    }
+
+    @DeleteMapping("/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteComment(@PathVariable Integer userId,
+                              @PathVariable Integer commentId) {
+        commentService.deleteComment(userId, commentId);
     }
 
 }

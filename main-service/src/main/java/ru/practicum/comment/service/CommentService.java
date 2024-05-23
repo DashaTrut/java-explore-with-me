@@ -9,8 +9,10 @@ import ru.practicum.comment.dto.NewCommentDto;
 import ru.practicum.comment.model.Comment;
 import ru.practicum.comment.repository.CommentRepositoryJpa;
 import ru.practicum.errors.exception.EntityNotFoundException;
-import ru.practicum.event.service.EventService;
-import ru.practicum.user.service.UserService;
+import ru.practicum.event.model.Event;
+import ru.practicum.event.repository.EventRepositoryJpa;
+import ru.practicum.user.model.User;
+import ru.practicum.user.repository.UserRepositoryJpa;
 
 import java.util.List;
 
@@ -19,12 +21,14 @@ import java.util.List;
 @Transactional
 public class CommentService {
     private final CommentRepositoryJpa commentRepository;
-    private final EventService eventService;
-    private final UserService userService;
+    private final EventRepositoryJpa eventRepositoryJpa;
+    private final UserRepositoryJpa userRepositoryJpa;
 
     public CommentDto createComment(Integer userId, Integer eventId, NewCommentDto text) {
-        var event = eventService.getEvent(eventId);
-        var user = userService.getUser(userId);
+        Event event = eventRepositoryJpa.findById(eventId).orElseThrow(() ->
+                new EntityNotFoundException("Этого мероприятия не существует"));
+        User user = userRepositoryJpa.findById(userId).orElseThrow(() ->
+                new EntityNotFoundException("Этого пользователя не существует"));
         Comment comment = commentRepository.save(CommentMapper.toComment(text, user, event));
 
 
