@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
+import static ru.practicum.Constant.DATE_TIME_FORMAT;
 
 @Slf4j
 @Service
@@ -50,7 +51,7 @@ public class EventService {
     private final UserRepositoryJpa userRepositoryJpa;
     private final CategoryService categoryService;
     private final HttpClient statsClient;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
 
     @Transactional
     public List<EventFullDto> adminGetEventsByParameters(List<Integer> users, List<String> states, List<Integer> categories,
@@ -70,7 +71,7 @@ public class EventService {
         filter.setRangeEnd(rangeEnd);
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size, Sort.by(DESC, "id"));
-        List<Specification<Event>> specifications = eventSpecification.adminGetSpecifications(filter);
+        List<Specification<Event>> specifications = eventSpecification.getSpecifications(filter);
         Page<Event> eventPage = eventRepositoryJpa.findAll(specifications.stream()
                 .reduce(Specification::or)
                 .orElse(null), pageable);
@@ -86,8 +87,7 @@ public class EventService {
     @Transactional
     public EventFullDto adminUpdateEvent(Integer eventId, UpdateEventAdminRequest updateEventAdminRequest) {
         Event event = getEvent(eventId);
-        Boolean a = event.getEventDate().isAfter(LocalDateTime.now().plusHours(1));
-        if (a) {
+        if (event.getEventDate().isAfter(LocalDateTime.now().plusHours(1))) {
             if (updateEventAdminRequest.getEventDate() != null && updateEventAdminRequest.getEventDate().isAfter(LocalDateTime.now().plusHours(1))) {
                 event.setEventDate(updateEventAdminRequest.getEventDate());
             }
@@ -135,7 +135,7 @@ public class EventService {
     @Transactional
     public List<EventShortDto> publicGetEventByParameters(String text, List<Integer> categories, Boolean paid,
                                                           LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                                          Boolean onlyAvailable, String sort, int from, int size,
+                                                          Boolean onlyAvailable, String sortString, int from, int size,
                                                           HttpServletRequest request) {
         if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
             throw new BadException("Конец диапазона раньше начала диапазона");
@@ -146,9 +146,21 @@ public class EventService {
         filter.setRangeStart(rangeStart);
         filter.setRangeEnd(rangeEnd);
         filter.setPaid(paid);
+        filter.setOnlyAvailable(onlyAvailable);
+
         int page = from / size;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(DESC, "id"));
-        List<Specification<Event>> specifications = eventSpecification.adminGetSpecifications(filter);
+        Sort sort;
+        if (sortString == null) {
+            sort = Sort.by(DESC, "id");
+        } else {
+            if (sortString.equals("EVENT_DATE")) {
+                sort = Sort.by(DESC, "eventDate");
+            } else {
+                sort = Sort.by(DESC, "views");
+            }
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
+        List<Specification<Event>> specifications = eventSpecification.getSpecifications(filter);
         Page<Event> eventPage = eventRepositoryJpa.findAll(specifications.stream()
                 .reduce(Specification::or)
                 .orElse(null), pageable);
@@ -162,6 +174,7 @@ public class EventService {
         addStatistic(request);
         return eventShortDtoList;
     }
+
 
     @Transactional
     public EventFullDto publicGetEventById(Integer id, HttpServletRequest request) {
@@ -326,7 +339,7 @@ public class EventService {
             } else {
                 return (State.CANCELED);
             }
-        } catch (IllegalArgumentException e) {
+        } catch (NullPointerException e) {
             throw new EntityNotFoundException("Неправильный state");
         }
     }

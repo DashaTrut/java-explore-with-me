@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class EventSpecification {
-    public List<Specification<Event>> adminGetSpecifications(SearchFilter filter) {
+    public List<Specification<Event>> getSpecifications(SearchFilter filter) {
         List<Specification<Event>> specifications = new ArrayList<>();
         specifications.add(filter.getInitiators() == null ? null : initiatorIdIn(filter.getInitiators()));
         specifications.add(filter.getCategories() == null ? null : catIdsIn(filter.getCategories()));
@@ -22,22 +22,6 @@ public class EventSpecification {
         specifications.add(filter.getRangeStart() == null ? null : eventAfter(filter.getRangeStart()));
         specifications.add(filter.getRangeEnd() == null ? null : eventBefore(filter.getRangeEnd()));
         return specifications.stream().filter(Objects::nonNull).collect(Collectors.toList());
-    }
-
-    public List<Specification<Event>> publicGetSpecifications(SearchFilter filter) {
-        List<Specification<Event>> specifications = new ArrayList<>();
-        specifications.add(eventIsPublished());
-        specifications.add(filter.getText() == null ? null : annotationOrDescriptionLike(filter.getText()));
-        specifications.add(filter.getCategories() == null ? null : catIdsIn(filter.getCategories()));
-        specifications.add(filter.getPaid() == null ? null : eventPaid(filter.getPaid()));
-        specifications.add(handleOnlyAvailable(filter.getOnlyAvailable()));
-        if (filter.getRangeStart() == null && filter.getRangeEnd() == null) {
-            specifications.add(eventAfterNow());
-        } else {
-            specifications.add(filter.getRangeStart() == null ? null : eventAfter(filter.getRangeStart()));
-            specifications.add(filter.getRangeEnd() == null ? null : eventBefore(filter.getRangeEnd()));
-        }
-        return specifications;
     }
 
     private Specification<Event> initiatorIdIn(List<Integer> ids) {
