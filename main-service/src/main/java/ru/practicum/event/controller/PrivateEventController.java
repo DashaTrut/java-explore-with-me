@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.comment.dto.CommentDto;
+import ru.practicum.comment.dto.NewCommentDto;
+import ru.practicum.comment.service.CommentService;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
@@ -28,6 +31,31 @@ import java.util.List;
 public class PrivateEventController {
     private final EventService eventService;
     private final ParticipationService participationService;
+    private final CommentService commentService;
+
+
+    @PostMapping("/{eventId}/comments")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto addComment(@PathVariable Integer userId,
+                                 @PathVariable Integer eventId,
+                                 @RequestBody @Valid NewCommentDto text) {
+        return commentService.createComment(userId, eventId, text);
+
+    }
+
+    @PatchMapping("/comments/{commentId}")
+    public CommentDto updateComment(@PathVariable Integer userId,
+                                    @PathVariable Integer commentId,
+                                    @RequestBody @Valid NewCommentDto text) {
+        return commentService.updateComment(userId, commentId, text);
+    }
+
+    @DeleteMapping("/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteComment(@PathVariable Integer userId,
+                              @PathVariable Integer commentId) {
+        commentService.deleteComment(userId, commentId);
+    }
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateEventByInitiator(@PathVariable @Positive Integer userId,
