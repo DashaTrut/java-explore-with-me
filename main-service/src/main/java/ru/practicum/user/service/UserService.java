@@ -63,4 +63,8 @@ public class UserService {
         userRepositoryJpa.deleteById(userId);
     }
 
+    public User getUser(Integer userId) {
+        return userRepositoryJpa.findById(userId).orElseThrow(() ->
+                new EntityNotFoundException("Зарегистрированного пользователя не существует"));
+    }
 }

@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.comment.dto.CommentDto;
+import ru.practicum.comment.service.CommentService;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.service.EventService;
@@ -24,6 +26,12 @@ import static ru.practicum.Constant.DATE_TIME_FORMAT;
 @RequestMapping(path = "/events")
 public class PublicEventController {
     private final EventService eventService;
+    private final CommentService commentService;
+
+    @GetMapping("/{eventId}/comments")
+    public List<CommentDto> getComments(@PathVariable Integer eventId) {
+        return commentService.getCommentsByEvent(eventId);
+    }
 
     @GetMapping
     public List<EventShortDto> getEvents(@RequestParam(required = false) String text,
